@@ -206,7 +206,7 @@ const ProductList = () => {
   };
 
   return (
-    <section className="bg-gray-50 min-h-screen">
+    <section className="bg-light min-h-screen">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -421,10 +421,10 @@ const ProductList = () => {
 
                     <div className="flex justify-between items-center">
                       <div>
-                        <span className="text-2xl font-bold text-gray-900">
-                          ${product.price.toLocaleString()}
+                        <span className="text-1xl font-bold text-gray-900">
+                          Kes {product.price.toLocaleString()}
                         </span>
-                        <span className="text-sm text-gray-500 ml-1">USD</span>
+                        
                       </div>
 
                       <button

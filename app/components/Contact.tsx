@@ -3,7 +3,7 @@ import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 
 const Contact = () => {
   return (
-    <section className="bg-light py-16 md:py-24">
+    <section className="bg-secondary py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-dark mb-4">
@@ -16,7 +16,7 @@ const Contact = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <div className="bg-secondary rounded-xl p-8 shadow-sm">
+          <div className="bg-light rounded-xl p-8 shadow-sm">
             <h3 className="text-xl font-semibold text-dark mb-6">Contact Information</h3>
             
             <div className="space-y-6">

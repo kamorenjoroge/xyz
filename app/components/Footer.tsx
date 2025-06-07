@@ -1,6 +1,7 @@
 // components/Footer.tsx
 import Link from 'next/link';
-import { FiFacebook, FiTwitter, FiInstagram, FiLinkedin, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import { AiFillTikTok } from 'react-icons/ai';
+import { FiFacebook, FiTwitter, FiInstagram, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 
 const Footer = () => {
   return (
@@ -29,7 +30,7 @@ const Footer = () => {
                 <FiInstagram className="h-5 w-5" />
               </a>
               <a href="#" className="text-gray-300 hover:text-primary transition">
-                <FiLinkedin className="h-5 w-5" />
+                <AiFillTikTok className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -118,7 +119,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-primary pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
             &copy; {new Date().getFullYear()} XYZ Machine. All rights reserved.
           </p>
