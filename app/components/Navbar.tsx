@@ -5,7 +5,7 @@ import User from './User';
 
 const Navbar = () => {
   return (
-    <header className="bg-light shadow-sm sticky top-0 z-50">
+    <header className="bg-light shadow-sm border border-primary sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left section - Logo and name */}
         <div className="flex items-center space-x-2">

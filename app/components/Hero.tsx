@@ -5,34 +5,35 @@ import { FiArrowRight } from 'react-icons/fi';
 const Hero = () => {
   return (
     <section className="relative bg-secondary overflow-hidden">
-      <div className="container mx-auto px-4 py-4 md:py-4 flex flex-col md:flex-row items-center">
+      <div className="container mx-auto px-4 py-8 md:py-4 flex flex-col md:flex-row items-center">
         {/* Text Content */}
-        <div className="md:w-1/2 z-10 mb-10 md:mb-0">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-4">
+        <div className="w-full md:w-1/2 z-10 mb-8 md:mb-0 order-1 md:order-none">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-4">
             Premium Industrial <span className="text-primary">Machinery</span>
           </h1>
-          <p className="text-lg text-gray-700 mb-8 max-w-lg">
+          <p className="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 max-w-lg">
             High-performance machines for your business needs. Quality engineered for durability and efficiency.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <button className="bg-primary hover:bg-primary/90 text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition flex items-center justify-center">
               Shop Now <FiArrowRight className="ml-2" />
             </button>
-            <button className="border-2 border-dark hover:bg-dark hover:text-white px-6 py-3 rounded-lg font-medium transition">
+            <button className="border-2 border-dark hover:bg-dark hover:text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition">
               Learn More
             </button>
           </div>
         </div>
 
         {/* Image */}
-        <div className="md:w-1/2 relative">
-          <div className="relative w-full h-80 md:h-96 lg:h-[500px]">
+        <div className="w-full md:w-1/2 relative order-0 md:order-none mb-6 md:mb-0">
+          <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px]">
             <Image 
               src="/bb.png" // Replace with your actual image path
               alt="Industrial Machine"
               fill
               className="object-contain"
               priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
             />
           </div>
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary rounded-full opacity-20 z-0"></div>
