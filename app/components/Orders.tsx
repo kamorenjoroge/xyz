@@ -141,7 +141,7 @@ const Orders = () => {
                   {new Date(order.date).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  ${order.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  Kes {order.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
@@ -184,7 +184,7 @@ const Orders = () => {
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-gray-500 mb-2">Order Total</h4>
-                  <p className="text-dark">${selectedOrder.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                  <p className="text-dark">Kes {selectedOrder.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-gray-500 mb-2">Status</h4>
@@ -213,9 +213,9 @@ const Orders = () => {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-dark">
-                        ${(item.price * item.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        Kes {(item.price * item.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                       </p>
-                      <p className="text-xs text-gray-500">${item.price.toLocaleString('en-US')} each</p>
+                      <p className="text-xs text-gray-500">Kes {item.price.toLocaleString('en-US')} each</p>
                     </div>
                   </div>
                 ))}
@@ -226,7 +226,7 @@ const Orders = () => {
                   <div className="text-right">
                     <p className="text-sm text-gray-500">Subtotal</p>
                     <p className="text-lg font-semibold text-dark">
-                      ${selectedOrder.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      Kes {selectedOrder.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 </div>

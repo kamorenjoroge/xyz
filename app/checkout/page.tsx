@@ -1,6 +1,10 @@
+import CheckOut from "../components/CheckOut"
+
 const Page = () => {
   return (
-    <div className=''>Page</div>
+    <div className=''>
+        <CheckOut/>
+    </div>
   )
 }
 
