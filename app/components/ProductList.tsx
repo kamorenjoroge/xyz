@@ -1,9 +1,9 @@
 // components/ProductList.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FiFilter,
-  FiStar,
   FiHeart,
   FiShoppingCart,
   FiChevronDown,
@@ -12,139 +12,64 @@ import {
 } from "react-icons/fi";
 import Image from "next/image";
 
-const products = [
-  {
-    id: 1,
-    name: "Industrial CNC Machine X2000",
-    price: 12500,
-    category: "CNC Machines",
-    rating: 4.8,
-    reviews: 124,
-    image: "/bb.png",
-    description:
-      'Precision CNC machine with automated tool changer and 15" display',
-    inStock: true,
-    isNew: true,
-  },
-  {
-    id: 2,
-    name: "Heavy Duty Lathe Machine Pro",
-    price: 8900,
-    category: "Lathes",
-    rating: 4.6,
-    reviews: 89,
-    image: "/bb.png",
-    description:
-      "High-precision lathe machine for heavy-duty industrial applications",
-    inStock: true,
-    isNew: false,
-  },
-  {
-    id: 3,
-    name: "Vertical Milling Machine VM-500",
-    price: 15750,
-    category: "Milling",
-    rating: 4.9,
-    reviews: 67,
-    image: "/bb.png",
-    description:
-      "Advanced vertical milling machine with digital readout system",
-    inStock: false,
-    isNew: false,
-  },
-  {
-    id: 4,
-    name: "Surface Grinder SG-200",
-    price: 6200,
-    category: "Grinders",
-    rating: 4.5,
-    reviews: 156,
-    image: "/bb.png",
-    description:
-      "Precision surface grinder with magnetic chuck and coolant system",
-    inStock: true,
-    isNew: true,
-  },
-  {
-    id: 5,
-    name: "Hydraulic Press HP-1000",
-    price: 22000,
-    category: "Press Machines",
-    rating: 4.7,
-    reviews: 43,
-    image: "/bb.png",
-    description: "Heavy-duty hydraulic press with programmable controls",
-    inStock: true,
-    isNew: false,
-  },
-  {
-    id: 6,
-    name: "Band Saw BS-450",
-    price: 3400,
-    category: "Cutting Tools",
-    rating: 4.4,
-    reviews: 201,
-    image: "/bb.png",
-    description: "Industrial band saw with variable speed and auto-feed system",
-    inStock: true,
-    isNew: false,
-  },
-  {
-    id: 7,
-    name: "Surface Grinder SG-200",
-    price: 6200,
-    category: "Grinders",
-    rating: 4.5,
-    reviews: 156,
-    image: "/bb.png",
-    description:
-      "Precision surface grinder with magnetic chuck and coolant system",
-    inStock: true,
-    isNew: true,
-  },
-  {
-    id: 8,
-    name: "Hydraulic Press HP-1000",
-    price: 22000,
-    category: "Press Machines",
-    rating: 4.7,
-    reviews: 43,
-    image: "/bb.png",
-    description: "Heavy-duty hydraulic press with programmable controls",
-    inStock: true,
-    isNew: false,
-  },
-  {
-    id: 9,
-    name: "Band Saw BS-450",
-    price: 3400,
-    category: "Cutting Tools",
-    rating: 4.4,
-    reviews: 201,
-    image: "/bb.png",
-    description: "Industrial band saw with variable speed and auto-feed system",
-    inStock: true,
-    isNew: false,
-  },
-];
+interface Product {
+  _id: string;
+  name: string;
+  brand: string;
+  category: string;
+  quantity: number;
+  description: string;
+  price: number;
+  color: string[];
+  image: string[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
-const categories = [
-  "All",
-  "CNC Machines",
-  "Lathes",
-  "Milling",
-  "Grinders",
-  "Press Machines",
-  "Cutting Tools",
-];
+interface Category {
+  _id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
 const ProductList = () => {
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [sortBy, setSortBy] = useState("Featured");
   const [searchTerm, setSearchTerm] = useState("");
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch products and categories
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [productsRes, categoriesRes] = await Promise.all([
+          axios.get("/api/tools"),
+          axios.get("/api/category"),
+        ]);
+
+        setProducts(productsRes.data.data);
+        setFilteredProducts(productsRes.data.data);
+        setCategories(categoriesRes.data.data);
+      } catch (err) {
+        setError("Failed to fetch data");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Filter and sort products
   const handleFilter = () => {
@@ -178,16 +103,10 @@ const ProductList = () => {
     // Sort products
     switch (sortBy) {
       case "Price: Low to High":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case "Price: High to Low":
         filtered.sort((a, b) => b.price - a.price);
         break;
-      case "Rating":
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case "Newest":
-        filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+      case "Price: High to Low":
+        filtered.sort((a, b) => a.price - b.price);
         break;
       default:
         // Featured - no sorting
@@ -197,13 +116,34 @@ const ProductList = () => {
     setFilteredProducts(filtered);
   };
 
-  const toggleFavorite = (productId: number) => {
+  const toggleFavorite = (productId: string) => {
     setFavorites((prev) =>
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
   };
+
+  if (loading) {
+    return (
+      <section className="bg-light min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading products...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="bg-light min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-500">
+          <p>{error}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-light min-h-screen">
@@ -231,20 +171,32 @@ const ProductList = () => {
                 <div className="mb-6">
                   <h4 className="font-medium text-gray-900 mb-3">Categories</h4>
                   <div className="space-y-2">
+                    <label className="flex items-center cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="category"
+                        checked={selectedCategory === "All"}
+                        onChange={() => setSelectedCategory("All")}
+                        className="mr-3 text-primary focus:ring-primary"
+                      />
+                      <span className="text-gray-700 group-hover:text-gray-900 transition">
+                        All
+                      </span>
+                    </label>
                     {categories.map((category) => (
                       <label
-                        key={category}
+                        key={category._id}
                         className="flex items-center cursor-pointer group"
                       >
                         <input
                           type="radio"
                           name="category"
-                          checked={selectedCategory === category}
-                          onChange={() => setSelectedCategory(category)}
+                          checked={selectedCategory === category.name}
+                          onChange={() => setSelectedCategory(category.name)}
                           className="mr-3 text-primary focus:ring-primary"
                         />
                         <span className="text-gray-700 group-hover:text-gray-900 transition">
-                          {category}
+                          {category.name}
                         </span>
                       </label>
                     ))}
@@ -257,8 +209,6 @@ const ProductList = () => {
                     Price Range
                   </h4>
                   <div className="flex items-center space-x-4">
-                    {" "}
-                    {/* Changed from block to flex */}
                     <input
                       type="number"
                       placeholder="Min"
@@ -292,7 +242,6 @@ const ProductList = () => {
                       <option>Featured</option>
                       <option>Price: Low to High</option>
                       <option>Price: High to Low</option>
-                      <option>Rating</option>
                       <option>Newest</option>
                     </select>
                     <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 pointer-events-none" />
@@ -319,7 +268,7 @@ const ProductList = () => {
                   Showing {filteredProducts.length} products
                 </h2>
                 {selectedCategory !== "All" && (
-                  <span className="bg-primary/10  px-3 py-1 rounded-full text-sm text-dark">
+                  <span className="bg-primary/10 px-3 py-1 rounded-full text-sm text-dark">
                     {selectedCategory}
                   </span>
                 )}
@@ -334,6 +283,7 @@ const ProductList = () => {
                     placeholder="Search machinery..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleFilter()}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
@@ -341,135 +291,131 @@ const ProductList = () => {
             </div>
 
             {/* Product Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden"
-                >
-                  <div className="relative h-48 bg-gray-50">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                    />
-
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {product.isNew && (
-                        <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                          New
-                        </span>
-                      )}
-                      {!product.inStock && (
-                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                          Out of Stock
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => toggleFavorite(product.id)}
-                        className={`p-2 rounded-full shadow-lg transition-colors ${
-                          favorites.includes(product.id)
-                            ? "bg-red-500 text-white"
-                            : "bg-white text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        <FiHeart
-                          className="h-4 w-4"
-                          fill={
-                            favorites.includes(product.id)
-                              ? "currentColor"
-                              : "none"
-                          }
+            {filteredProducts.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+                <h3 className="text-xl font-medium text-gray-700 mb-2">
+                  No products found
+                </h3>
+                <p className="text-gray-500">
+                  Try adjusting your filters or search term
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                {filteredProducts.map((product) => (
+                  <div
+                    key={product._id}
+                    className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 overflow-hidden"
+                  >
+                    <div className="relative h-48 bg-gray-50">
+                      {product.image.length > 0 && (
+                        <Image
+                          src={product.image[0]}
+                          alt={product.name}
+                          fill
+                          className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                         />
-                      </button>
-                      <button className="p-2 bg-white text-gray-600 rounded-full shadow-lg hover:bg-gray-50 transition-colors">
-                        <FiEye className="h-4 w-4" />
-                      </button>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => toggleFavorite(product._id)}
+                          className={`p-2 rounded-full shadow-lg transition-colors ${
+                            favorites.includes(product._id)
+                              ? "bg-red-500 text-white"
+                              : "bg-white text-gray-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          <FiHeart
+                            className="h-4 w-4"
+                            fill={
+                              favorites.includes(product._id)
+                                ? "currentColor"
+                                : "none"
+                            }
+                          />
+                        </button>
+                        <button className="p-2 bg-white text-gray-600 rounded-full shadow-lg hover:bg-gray-50 transition-colors">
+                          <FiEye className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors">
+                            {product.name}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {product.brand} • {product.category}
+                          </p>
+                        </div>
+                      </div>
+
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {product.description}
+                      </p>
+
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-1xl font-bold text-gray-900">
+                            KES {product.price.toLocaleString()}
+                          </span>
+                          {product.quantity > 0 && (
+                            <span className="block text-xs text-green-600">
+                              In Stock ({product.quantity})
+                            </span>
+                          )}
+                        </div>
+
+                        <button
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                            product.quantity > 0
+                              ? "bg-primary hover:bg-primary/90 text-white hover:scale-105"
+                              : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          }`}
+                          disabled={product.quantity <= 0}
+                        >
+                          <FiShoppingCart className="h-4 w-4" />
+                          <span>
+                            {product.quantity > 0 ? "Add to Cart" : "Out of Stock"}
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {product.category}
-                        </p>
-                      </div>
-                      <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
-                        <FiStar className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="text-sm font-medium ml-1 text-gray-700">
-                          {product.rating}
-                        </span>
-                        <span className="text-xs text-gray-500 ml-1">
-                          ({product.reviews})
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {product.description}
-                    </p>
-
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <span className="text-1xl font-bold text-gray-900">
-                          Kes {product.price.toLocaleString()}
-                        </span>
-                        
-                      </div>
-
-                      <button
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                          product.inStock
-                            ? "bg-primary hover:bg-primary/90 text-white hover:scale-105"
-                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                        }`}
-                        disabled={!product.inStock}
-                      >
-                        <FiShoppingCart className="h-4 w-4" />
-                        <span>
-                          {product.inStock ? "Add to Cart" : "Out of Stock"}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
-            <div className="flex justify-center">
-              <nav className="flex items-center space-x-2">
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <span className="sr-only">Previous</span>
-                  &laquo;
-                </button>
-                <button className="px-4 py-3 bg-primary text-white rounded-lg font-medium">
-                  1
-                </button>
-                {[2, 3, 4].map((page) => (
-                  <button
-                    key={page}
-                    className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    {page}
+            {filteredProducts.length > 0 && (
+              <div className="flex justify-center">
+                <nav className="flex items-center space-x-2">
+                  <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <span className="sr-only">Previous</span>
+                    &laquo;
                   </button>
-                ))}
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <span className="sr-only">Next</span>
-                  &raquo;
-                </button>
-              </nav>
-            </div>
+                  <button className="px-4 py-3 bg-primary text-white rounded-lg font-medium">
+                    1
+                  </button>
+                  {[2, 3, 4].map((page) => (
+                    <button
+                      key={page}
+                      className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <span className="sr-only">Next</span>
+                    &raquo;
+                  </button>
+                </nav>
+              </div>
+            )}
           </div>
         </div>
       </div>
