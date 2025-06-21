@@ -5,12 +5,12 @@ import axios from "axios";
 import {
   FiFilter,
   FiHeart,
-  FiShoppingCart,
   FiChevronDown,
   FiEye,
   FiSearch,
 } from "react-icons/fi";
 import Image from "next/image";
+import AddToCartMain from "./AddToCartMain";
 
 interface Product {
   _id: string;
@@ -370,19 +370,15 @@ const ProductList = () => {
                           )}
                         </div>
 
-                        <button
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                            product.quantity > 0
-                              ? "bg-primary hover:bg-primary/90 text-white hover:scale-105"
-                              : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          }`}
-                          disabled={product.quantity <= 0}
-                        >
-                          <FiShoppingCart className="h-4 w-4" />
-                          <span>
-                            {product.quantity > 0 ? "Add to Cart" : "Out of Stock"}
-                          </span>
-                        </button>
+                        <AddToCartMain
+                          productId={product._id}
+                          productName={product.name}
+                          productPrice={product.price}
+                          productImage={product.image[0]}
+                          productQuantity={product.quantity}
+                          productColor={product.color}
+                          className="mt-2"
+                        />
                       </div>
                     </div>
                   </div>
