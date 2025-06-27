@@ -7,7 +7,6 @@ import { useCartStore } from "@/lib/store/cartStore";
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Use the cart store
   const {
     cart: cartItems,
     removeFromCart,
@@ -42,13 +41,14 @@ const Cart = () => {
         <>
           {/* Overlay */}
           <div 
-            className="fixed inset-0 bg-primary/10 bg-opacity-50 z-40"
+            className="fixed inset-0 bg-black/30 z-40 md:bg-primary/10 md:bg-opacity-50"
             onClick={() => setIsOpen(false)}
           />
           
-          {/* Cart Content */}
-          <div className="fixed right-4 top-16 md:right-8 md:top-20 w-full max-w-md bg-white rounded-lg shadow-xl z-50 overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          {/* Cart Content - Updated for mobile responsiveness */}
+          <div className="fixed inset-0 top-0 h-screen w-screen bg-white z-50 overflow-y-auto md:inset-auto md:right-4 md:top-16 md:h-auto md:w-full md:max-w-md md:rounded-lg md:shadow-xl">
+            {/* Header with close button */}
+            <div className="sticky top-0 bg-white p-4 border-b border-gray-200 flex justify-between items-center z-10">
               <h2 className="text-lg font-bold text-dark">Your Cart ({cartCount})</h2>
               <button 
                 onClick={() => setIsOpen(false)}
@@ -59,7 +59,7 @@ const Cart = () => {
             </div>
 
             {/* Cart Items */}
-            <div className="max-h-96 overflow-y-auto">
+            <div className="p-4">
               {cartItems.length === 0 ? (
                 <div className="p-8 text-center text-gray-500">
                   Your cart is empty
@@ -67,33 +67,33 @@ const Cart = () => {
               ) : (
                 <ul className="divide-y divide-gray-200">
                   {cartItems.map((item) => (
-                    <li key={item.id} className="p-4">
-                      <div className="flex gap-4">
+                    <li key={item.id} className="py-4">
+                      <div className="flex gap-3 sm:gap-4">
                         <div className="flex-shrink-0">
                           <Image
                             src={item.image}
                             alt={item.name}
                             width={80}
                             height={80}
-                            className="h-20 w-20 rounded-md object-cover"
+                            className="h-16 w-16 rounded-md object-cover sm:h-20 sm:w-20"
                           />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex justify-between">
-                            <h3 className="text-sm font-medium text-dark">{item.name}</h3>
+                            <h3 className="text-sm font-medium text-dark truncate">{item.name}</h3>
                             <button 
                               onClick={() => removeFromCart(item.id)}
-                              className="text-gray-400 hover:text-warning"
+                              className="text-gray-400 hover:text-warning flex-shrink-0 ml-2"
                             >
                               <FiX className="h-4 w-4" />
                             </button>
                           </div>
                           {item.color && (
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 mt-1 truncate">
                               Color: {item.color.join(', ')}
                             </p>
                           )}
-                          <div className="mt-2 flex items-center justify-between">
+                          <div className="mt-2 flex items-center justify-between flex-wrap gap-2">
                             <div className="flex items-center border border-gray-300 rounded-md">
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -111,7 +111,7 @@ const Cart = () => {
                               </button>
                             </div>
                             <p className="text-sm font-medium text-dark">
-                              KES {item.price.toLocaleString()}
+                              KES {(item.price * item.quantity).toLocaleString()}
                             </p>
                           </div>
                         </div>
@@ -122,9 +122,9 @@ const Cart = () => {
               )}
             </div>
 
-            {/* Cart Summary */}
+            {/* Cart Summary - Sticky at bottom on mobile */}
             {cartItems.length > 0 && (
-              <div className="border-t border-gray-200 p-4">
+              <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 md:static">
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal</span>
@@ -139,7 +139,7 @@ const Cart = () => {
                     <span>KES {total.toLocaleString()}</span>
                   </div>
                 </div>
-                <button className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-primary hover:bg-primary/90 text-white rounded-md font-medium">
+                <button className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary/90 text-white rounded-md font-medium">
                   Proceed to Checkout <FiChevronRight className="h-4 w-4" />
                 </button>
               </div>

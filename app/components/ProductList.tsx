@@ -46,6 +46,8 @@ const ProductList = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // Add mobile filter state
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Fetch products and categories
   useEffect(() => {
@@ -103,10 +105,10 @@ const ProductList = () => {
     // Sort products
     switch (sortBy) {
       case "Price: Low to High":
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort((a, b) => a.price - b.price);
         break;
       case "Price: High to Low":
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort((a, b) => b.price - a.price);
         break;
       default:
         // Featured - no sorting
@@ -114,6 +116,15 @@ const ProductList = () => {
     }
 
     setFilteredProducts(filtered);
+    // Close mobile filter after applying
+    setIsFilterOpen(false);
+  };
+
+  const resetFilters = () => {
+    setSelectedCategory("All");
+    setPriceRange({ min: "", max: "" });
+    setSortBy("Featured");
+    setSearchTerm("");
   };
 
   const toggleFavorite = (productId: string) => {
@@ -159,8 +170,90 @@ const ProductList = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Filters */}
-          <div className="lg:w-1/4">
+          {/* Mobile Filter Dropdown */}
+          <div className="lg:hidden mb-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex ">
+               
+                {/* Sort Dropdown */}
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => {
+                      setSortBy(e.target.value);
+                      handleFilter();
+                    }}
+                    className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-8 text-sm font-medium text-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    <option>Featured</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                    <option>Newest</option>
+                  </select>
+                  <FiChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Price Filter Toggle */}
+              <div className="mt-4">
+                <button
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className="flex items-center justify-between w-full text-left text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  <span>Price Range</span>
+                  <FiChevronDown 
+                    className={`h-4 w-4 transition-transform ${
+                      isFilterOpen ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </button>
+
+                {/* Price Range Inputs */}
+                {isFilterOpen && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={priceRange.min}
+                        onChange={(e) =>
+                          setPriceRange({ ...priceRange, min: e.target.value })
+                        }
+                        className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                      />
+                      <span className="text-gray-400 text-sm">to</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={priceRange.max}
+                        onChange={(e) =>
+                          setPriceRange({ ...priceRange, max: e.target.value })
+                        }
+                        className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                      />
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={resetFilters}
+                        className="flex-1 py-2 px-3 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        Clear
+                      </button>
+                      <button
+                        onClick={handleFilter}
+                        className="flex-1 py-2 px-3 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Sidebar Filters */}
+          <div className="hidden lg:block lg:w-1/4">
             <div className="sticky top-8">
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="flex items-center text-lg font-semibold text-gray-900 mb-6">
@@ -275,8 +368,8 @@ const ProductList = () => {
               </div>
 
               {/* Right side: Search Bar */}
-              <div className="w-full sm:w-auto">
-                <div className="relative max-w-md">
+              <div className="w-full sm:hidden">
+                <div className="relative w-full">
                   <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     type="text"
