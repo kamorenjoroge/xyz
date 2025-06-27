@@ -1,151 +1,97 @@
-"use client"
-import { FiShoppingCart, FiX, FiChevronRight } from "react-icons/fi";
-import { useState } from "react";
-import Image from "next/image";
+"use client";
+import { FiShoppingCart, FiX } from 'react-icons/fi';
+import { useState } from 'react';
 import { useCartStore } from "@/lib/store/cartStore";
+import Image from 'next/image';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
-  
-  const {
-    cart: cartItems,
-    removeFromCart,
-    updateQuantity,
-    getTotalItems,
-    getTotalPrice,
-  } = useCartStore();
+  const { cart, removeFromCart, getTotalItems, getTotalPrice } = useCartStore();
 
-  const cartCount = getTotalItems();
-  const subtotal = getTotalPrice();
-  const shipping = 0;
-  const total = subtotal + shipping;
+  const itemCount = getTotalItems();
+  const totalAmount = getTotalPrice();
+
+  const toggleCart = () => setIsOpen(!isOpen);
+  const closeCart = () => setIsOpen(false);
 
   return (
     <div className="relative">
-      {/* Cart Icon Button */}
       <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative text-dark hover:text-primary transition"
-        aria-label="Cart"
+        className="relative text-dark hover:text-primary transition flex items-center"
+        onClick={toggleCart}
       >
         <FiShoppingCart className="h-6 w-6" />
-        {cartCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-warning text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {cartCount}
+        {itemCount > 0 && (
+          <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {itemCount}
           </span>
         )}
       </button>
 
       {/* Cart Dropdown */}
       {isOpen && (
-        <>
-          {/* Overlay */}
-          <div 
-            className="fixed inset-0 bg-black/30 z-40 md:bg-primary/10 md:bg-opacity-50"
-            onClick={() => setIsOpen(false)}
-          />
-          
-          {/* Cart Content - Updated for mobile responsiveness */}
-          <div className="fixed inset-0 top-0 h-screen w-screen bg-white z-50 overflow-y-auto md:inset-auto md:right-4 md:top-16 md:h-auto md:w-full md:max-w-md md:rounded-lg md:shadow-xl">
-            {/* Header with close button */}
-            <div className="sticky top-0 bg-white p-4 border-b border-gray-200 flex justify-between items-center z-10">
-              <h2 className="text-lg font-bold text-dark">Your Cart ({cartCount})</h2>
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-dark"
-              >
-                <FiX className="h-5 w-5" />
-              </button>
-            </div>
+        <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+          {/* Dropdown Header with Close Button */}
+          <div className="flex justify-between items-center p-3 border-b">
+            <h3 className="font-medium text-gray-900">Your Cart ({itemCount})</h3>
+            <button 
+              onClick={closeCart}
+              className="text-gray-500 hover:text-dark transition-colors"
+              aria-label="Close cart"
+            >
+              <FiX className="h-5 w-5" />
+            </button>
+          </div>
 
-            {/* Cart Items */}
-            <div className="p-4">
-              {cartItems.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
-                  Your cart is empty
-                </div>
-              ) : (
-                <ul className="divide-y divide-gray-200">
-                  {cartItems.map((item) => (
-                    <li key={item.id} className="py-4">
-                      <div className="flex gap-3 sm:gap-4">
-                        <div className="flex-shrink-0">
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            width={80}
-                            height={80}
-                            className="h-16 w-16 rounded-md object-cover sm:h-20 sm:w-20"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between">
-                            <h3 className="text-sm font-medium text-dark truncate">{item.name}</h3>
-                            <button 
-                              onClick={() => removeFromCart(item.id)}
-                              className="text-gray-400 hover:text-warning flex-shrink-0 ml-2"
-                            >
-                              <FiX className="h-4 w-4" />
-                            </button>
-                          </div>
-                          {item.color && (
-                            <p className="text-xs text-gray-500 mt-1 truncate">
-                              Color: {item.color.join(', ')}
-                            </p>
-                          )}
-                          <div className="mt-2 flex items-center justify-between flex-wrap gap-2">
-                            <div className="flex items-center border border-gray-300 rounded-md">
-                              <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                                disabled={item.quantity <= 1}
-                              >
-                                -
-                              </button>
-                              <span className="px-2 text-sm">{item.quantity}</span>
-                              <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                              >
-                                +
-                              </button>
-                            </div>
-                            <p className="text-sm font-medium text-dark">
-                              KES {(item.price * item.quantity).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
+          <div className="p-4">
+            {cart.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">Your cart is empty</p>
+            ) : (
+              <>
+                <div className="max-h-64 overflow-y-auto">
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex items-center py-2 border-b border-gray-100">
+                      <Image
+                      width={1000}
+                      height={1000}
+                        src={item.image} 
+                        alt={item.name} 
+                        className="h-12 w-12 object-cover rounded"
+                      />
+                      <div className="ml-3 flex-1">
+                        <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
+                        <p className="text-xs text-gray-500">
+                          {item.quantity} × KES {item.price.toLocaleString()}
+                        </p>
                       </div>
-                    </li>
+                      <button 
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-gray-400 hover:text-red-500"
+                        aria-label="Remove item"
+                      >
+                        ×
+                      </button>
+                    </div>
                   ))}
-                </ul>
-              )}
-            </div>
-
-            {/* Cart Summary - Sticky at bottom on mobile */}
-            {cartItems.length > 0 && (
-              <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 md:static">
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Subtotal</span>
-                    <span>KES {subtotal.toLocaleString()}</span>
+                </div>
+                <div className="border-t border-gray-200 mt-2 pt-3">
+                  <div className="flex justify-between font-medium text-gray-900">
+                    <span>Subtotal:</span>
+                    <span>KES {totalAmount.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Shipping</span>
-                    <span>KES {shipping.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-base font-bold text-dark">
-                    <span>Total</span>
-                    <span>KES {total.toLocaleString()}</span>
+                  <div className="mt-3 flex space-x-2">
+                    <button className="flex-1 bg-primary text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-primary-dark transition">
+                      View Cart
+                    </button>
+                    <button className="flex-1 bg-gray-900 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-800 transition">
+                      Checkout
+                    </button>
                   </div>
                 </div>
-                <button className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary/90 text-white rounded-md font-medium">
-                  Proceed to Checkout <FiChevronRight className="h-4 w-4" />
-                </button>
-              </div>
+              </>
             )}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
