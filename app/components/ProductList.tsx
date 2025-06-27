@@ -8,6 +8,7 @@ import {
   FiChevronDown,
   FiEye,
   FiSearch,
+  
 } from "react-icons/fi";
 import Image from "next/image";
 import AddToCartMain from "./AddToCartMain";
@@ -173,8 +174,20 @@ const ProductList = () => {
           {/* Mobile Filter Dropdown */}
           <div className="lg:hidden mb-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <div className="flex ">
-               
+              <div className="flex items-center gap-4">
+                {/* Search */}
+                <div className="relative flex-1">
+                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleFilter()}
+                    className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                  />
+                </div>
+
                 {/* Sort Dropdown */}
                 <div className="relative">
                   <select
@@ -368,8 +381,8 @@ const ProductList = () => {
               </div>
 
               {/* Right side: Search Bar */}
-              <div className="w-full sm:hidden">
-                <div className="relative w-full">
+              <div className="w-full sm:w-auto">
+                <div className="relative max-w-md">
                   <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     type="text"
