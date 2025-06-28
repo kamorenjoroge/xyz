@@ -30,9 +30,9 @@ const Cart = () => {
 
       {/* Cart Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+        <div className="absolute right-0 mt-4 w-72 bg-white rounded-md shadow-lg z-50 border border-primary">
           {/* Dropdown Header with Close Button */}
-          <div className="flex justify-between items-center p-3 border-b">
+          <div className="flex justify-between items-center p-3 bg-primary/20 border-b">
             <h3 className="font-medium text-gray-900">Your Cart ({itemCount})</h3>
             <button 
               onClick={closeCart}
@@ -50,7 +50,7 @@ const Cart = () => {
               <>
                 <div className="max-h-64 overflow-y-auto">
                   {cart.map((item) => (
-                    <div key={item.id} className="flex items-center py-2 border-b border-gray-100">
+                    <div key={item.id} className="flex items-center py-2 border-b border-gray-900">
                       <Image
                       width={1000}
                       height={1000}
@@ -66,7 +66,7 @@ const Cart = () => {
                       </div>
                       <button 
                         onClick={() => removeFromCart(item.id)}
-                        className="text-gray-400 hover:text-red-500"
+                        className="text-gray-900 hover:text-red-500"
                         aria-label="Remove item"
                       >
                         ×
@@ -81,11 +81,9 @@ const Cart = () => {
                   </div>
                   <div className="mt-3 flex space-x-2">
                     <button className="flex-1 bg-primary text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-primary-dark transition">
-                      View Cart
+                      Check Out
                     </button>
-                    <button className="flex-1 bg-gray-900 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-800 transition">
-                      Checkout
-                    </button>
+                   
                   </div>
                 </div>
               </>
