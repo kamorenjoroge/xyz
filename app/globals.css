@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary:rgb(247, 80, 64);
+  --color-primary: rgb(247, 64, 64);
+  --color-primary-light: rgba(247, 64, 64, 0.1); /* Light red for modals */
   --color-secondary: #EDF1FF;
   --color-success: #28a745;
   --color-info: #17a2b8;
@@ -10,5 +11,4 @@
   --color-light: #FFFFFF;
   --color-dark: #1C1C1C;
   --color-warning: #ee0937;
-
 }

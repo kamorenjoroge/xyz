@@ -123,7 +123,7 @@ const Orders = () => {
       {/* Modal */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-secondary/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-light border border-primary rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-secondary border border-primary rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b p-4">
               <h3 className="text-lg font-semibold text-dark">
                 Order Details - {selectedOrder._id.slice(-6)}
