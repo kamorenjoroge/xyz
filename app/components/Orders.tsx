@@ -142,47 +142,54 @@ const Orders = () => {
     <div className="bg-light p-6  rounded-lg shadow-sm">
       <h2 className="text-2xl font-bold text-dark mb-6">Your Orders</h2>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredOrders.map((order) => (
-              <tr key={order._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-dark">{order._id.slice(-6)}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  Kes {order.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                    {order.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm text-primary">
-                  <button 
-                    onClick={() => openOrderDetails(order)} 
-                    className="flex items-center gap-1 hover:underline"
-                  >
-                    <FiEye className="h-4 w-4" />
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
+    <div className="space-y-4">
+  <h2 className="text-lg font-semibold text-gray-900 px-4 sm:px-0">Your Orders</h2>
+  <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Order ID</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {filteredOrders.map((order) => (
+          <tr key={order._id} className="hover:bg-gray-50">
+            {/* Hidden on mobile */}
+            <td className="px-6 py-4 text-sm font-medium text-dark hidden sm:table-cell">
+              {order._id.slice(-6)}
+            </td>
+            <td className="px-6 py-4 text-sm text-gray-500 hidden sm:table-cell">
+              {new Date(order.createdAt).toLocaleDateString()}
+            </td>
+            
+            {/* Always visible columns */}
+            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+              Kes {order.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </td>
+            <td className="px-6 py-4">
+              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
+                {order.status}
+              </span>
+            </td>
+            <td className="px-6 py-4 text-sm text-primary">
+              <button 
+                onClick={() => openOrderDetails(order)} 
+                className="flex items-center gap-1 hover:underline"
+              >
+                <FiEye className="h-4 w-4" />
+                <span className="hidden sm:inline">View</span>
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-secondary/40 flex items-center justify-center p-4 z-50">
           <div className="bg-secondary border border-primary rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
