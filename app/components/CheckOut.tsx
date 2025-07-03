@@ -137,7 +137,7 @@ const CheckOut = () => {
             You have not added any items to your cart yet.
           </p>
           <Link
-            href="/products"
+            href="/shop"
             className="inline-block mt-8 px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium"
           >
             Browse Products
