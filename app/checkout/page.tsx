@@ -1,93 +1,60 @@
-'use client'
+"use client";
 import { useUser, SignInButton } from "@clerk/nextjs";
+
 import CheckOut from "../components/CheckOut";
-import { motion } from "framer-motion";
-import { FaSignInAlt, FaArrowRight } from "react-icons/fa";
-import { FiLogIn } from "react-icons/fi";
 
 const Page = () => {
-  const { isSignedIn } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
+
+  if (!isLoaded) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col gap-8">
+        
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white to-primary/5 flex flex-col items-center justify-center gap-6 p-4">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center"
-        >
-          <div className="flex justify-center mb-6">
-            <motion.div
-              animate={{ 
-                scale: [1, 1.1, 1],
-                rotate: [0, 10, -10, 0]
-              }}
-              transition={{ 
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: "mirror"
-              }}
-            >
-              <FiLogIn className="text-5xl text-green-600" />
-            </motion.div>
+      <div className="min-h-[calc(100vh-160px)] flex flex-col items-center justify-center bg-secondary">
+        <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-sm border border-gray-100 text-center">
+          {/* Simple icon using emoji */}
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 mb-4 text-2xl">
+            🛒
           </div>
-          
-          <motion.h1 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-2xl font-bold text-gray-800 mb-2"
-          >
-            Welcome to Checkout
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-gray-600 mb-6"
-          >
-            Please sign in to access your personalized checkout experience.
-          </motion.p>
-          
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            Check Out
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Sign in to complete your purchase. 
+          </p>
           <SignInButton mode="modal">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 bg-gradient-to-r from-primary/95 to-back text-white rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 w-full"
-            >
-              <FaSignInAlt />
-              <span>Sign In</span>
-              <FaArrowRight className="ml-1" />
-            </motion.button>
+            <button className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200">
+              Sign In
+            </button>
           </SignInButton>
           
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-4 text-sm text-gray-500"
-          >
-            Secure and seamless authentication
-          </motion.div>
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.7 }}
-          transition={{ delay: 0.8 }}
-          className="text-xs text-gray-500 mt-4 text-center"
-        >
-          Your data is protected with end-to-end encryption
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <CheckOut />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          Your Orders
+        </h1>
+        <p className="mt-2 text-sm text-gray-600">
+          View all your past and current orders
+        </p>
+      </div>
+      <CheckOut/>
     </div>
   );
 };
