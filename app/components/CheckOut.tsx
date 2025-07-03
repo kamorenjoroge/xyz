@@ -1,11 +1,13 @@
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useUser } from "@clerk/nextjs";
+import { useState, useEffect } from 'react';
 import { FiShoppingCart, FiUser, FiCreditCard, FiCheckCircle } from 'react-icons/fi';
 import { useCartStore } from '@/lib/store/cartStore';
 
 const CheckOut = () => {
+  const { isSignedIn, user } = useUser();
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -13,6 +15,18 @@ const CheckOut = () => {
     mpesaCode: '',
     deliveryAddress: ''
   });
+
+  // Autofill user data when signed in
+  useEffect(() => {
+    if (isSignedIn && user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        email: user.emailAddresses.find(email => email.id === user.primaryEmailAddressId)?.emailAddress || '',
+        phoneNumber: user.phoneNumbers.find(phone => phone.id === user.primaryPhoneNumberId)?.phoneNumber || ''
+      }));
+    }
+  }, [isSignedIn, user]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { cart, clearCart } = useCartStore();
@@ -164,6 +178,7 @@ const CheckOut = () => {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                       required
+                      disabled
                     />
                   </div>
 
@@ -193,6 +208,7 @@ const CheckOut = () => {
                       value={formData.email}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                      disabled 
                     />
                   </div>
 

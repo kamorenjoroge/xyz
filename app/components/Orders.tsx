@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { FiEye, FiX } from 'react-icons/fi';
 import axios from 'axios';
+import { useUser } from '@clerk/nextjs';
 
 type OrderItem = {
   id: string;
@@ -18,28 +19,48 @@ type Order = {
   total: number;
   status: 'pending' | 'confirmed' | 'cancelled' | 'shipped';
   items: OrderItem[];
+  customerEmail?: string;
 };
 
 const Orders = () => {
+  const { isLoaded, isSignedIn, user } = useUser();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const fetchOrders = async () => {
-    try {
-      const response = await axios.get('/api/orders');
-      setOrders(response.data);
-    } catch (error) {
-      console.error('Failed to fetch orders:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('/api/orders');
+        const allOrders = response.data;
+        setOrders(allOrders);
+
+        if (isSignedIn && user?.primaryEmailAddress?.emailAddress) {
+          const userEmail = user.primaryEmailAddress.emailAddress;
+          const userOrders = allOrders.filter((order: Order) => 
+            order.customerEmail === userEmail
+          );
+          setFilteredOrders(userOrders);
+        } else {
+          setFilteredOrders(allOrders);
+        }
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+        setError('Failed to load orders. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isLoaded) {
+      fetchOrders();
+    }
+  }, [isLoaded, isSignedIn, user]);
 
   const openOrderDetails = (order: Order) => {
     setSelectedOrder(order);
@@ -66,20 +87,59 @@ const Orders = () => {
     }
   };
 
+  if (!isLoaded) {
+    return (
+      <div className="p-8 text-center text-lg text-gray-600">Loading user data...</div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="p-8 text-center text-lg text-gray-600">Loading orders...</div>
     );
   }
 
-  if (!orders.length) {
+  if (error) {
     return (
-      <div className="p-8 text-center text-lg text-gray-600">No orders found.</div>
+      <div className="p-8 text-center">
+        <div className="text-red-500 mb-4">{error}</div>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!filteredOrders.length) {
+    return (
+      <div className="p-8  text-center">
+        <div className="text-lg text-gray-600 mb-4">
+          {isSignedIn ? 'You have no orders yet.' : 'No orders found. Please sign in to view your orders.'}
+        </div>
+        {isSignedIn ? (
+          <a 
+            href="/shop" 
+            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark inline-block"
+          >
+            Start Shopping
+          </a>
+        ) : (
+          <a 
+            href="/sign-in" 
+            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark inline-block"
+          >
+            Sign In
+          </a>
+        )}
+      </div>
     );
   }
 
   return (
-    <div className="bg-light p-6 rounded-lg shadow-sm">
+    <div className="bg-light p-6  rounded-lg shadow-sm">
       <h2 className="text-2xl font-bold text-dark mb-6">Your Orders</h2>
 
       <div className="overflow-x-auto">
@@ -94,7 +154,7 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <tr key={order._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm font-medium text-dark">{order._id.slice(-6)}</td>
                 <td className="px-6 py-4 text-sm text-gray-500">
@@ -109,7 +169,10 @@ const Orders = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-primary">
-                  <button onClick={() => openOrderDetails(order)} className="flex items-center gap-1 hover:underline">
+                  <button 
+                    onClick={() => openOrderDetails(order)} 
+                    className="flex items-center gap-1 hover:underline"
+                  >
                     <FiEye className="h-4 w-4" />
                     View
                   </button>
@@ -120,7 +183,6 @@ const Orders = () => {
         </table>
       </div>
 
-      {/* Modal */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-secondary/40 flex items-center justify-center p-4 z-50">
           <div className="bg-secondary border border-primary rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
